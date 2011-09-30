@@ -20,12 +20,12 @@ function stopquestion() {
 }
 
 case $victim in
-    $USER) stopquestion "Are you sure to kill you own processes?";;
+    $USER) stopquestion "Are you sure to kill your own processes?";;
     init|root) stopquestion "Are you sure to kill all '$victim' processes?";;
 }
 
 processlist=( $(ps aux | awk '{print $1" "$2}' | egrep '(krystelle|bastien|anna|jc)' | awk '{print $2}') )
 
-(($#processlist == 0)) && logexit "No process for user $victim"
+(($#processlist == 0)) && logexit "The user '$victim' doesn't run any process"
 
 sudo kill -9 $processlist
