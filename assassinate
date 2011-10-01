@@ -24,7 +24,9 @@ case $victim in
     init|root) stopquestion "Are you sure to kill all '$victim' processes?";;
 }
 
-processlist=( $(ps aux | awk '{print $1" "$2}' | egrep '(krystelle|bastien|anna|jc)' | awk '{print $2}') )
+processlist=( $(ps aux | awk '$1 == "'$victim'" {print $2}') )
+
+print -l -- $processlist
 
 (($#processlist == 0)) && logexit "The user '$victim' doesn't run any process"
 
