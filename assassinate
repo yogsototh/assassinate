@@ -6,9 +6,8 @@ function logexit {
     exit 1
 }
 
-(($#<1)) && logexit "Usage: ${0:t} user" 
+(($#<1)) && logexit "Usage: ${0:t} user [user ...]" 
 
-victim="$1"
 
 function stopquestion() {
     print -n -- "$* (y/n): "
@@ -19,15 +18,18 @@ function stopquestion() {
     esac
 }
 
-case $victim in
-    $USER) stopquestion "Are you sure to kill your own processes?";;
-    init|root) stopquestion "Are you sure to kill all '$victim' processes?";;
-}
+local processlist
+for victim in $@; do
 
-processlist=( $(ps aux | awk '$1 == "'$victim'" {print $2}') )
+    case $victim in
+        $USER) stopquestion "Are you sure to kill your own processes?";;
+        init|root) stopquestion "Are you sure to kill all '$victim' processes?";;
+    esac
+    
+    processlist=( $processlist $(ps aux | awk '$1 == "'$victim'" {print $2}') )
+    
+    (($#processlist == 0)) && logexit "The user '$victim' doesn't run any process"
 
-print -l -- $processlist
-
-(($#processlist == 0)) && logexit "The user '$victim' doesn't run any process"
+done
 
 sudo kill -9 $processlist
